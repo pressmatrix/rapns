@@ -14,9 +14,14 @@ module Rapns
               batch_size = Rapns.config.batch_size
               relation = Rapns::Notification.where(:picked_up => false).ready_for_delivery.for_apps(apps)
               relation = relation.limit(batch_size) unless Rapns.config.push
+              Rapns.logger.info "==== updating #{relation.count} as picked up ==="
               relation.update_all(:picked_up => true)
-              relation.to_a
-            rescue
+              Rapns.logger.info "==== updated #{relation.count} ==="
+              arr = relation.to_a
+              Rapns.logger.info "=== returning array of #{arr.size} elements ==="
+              return arr
+            rescue StandardException => e
+              Rapns.logger.info "=== error #{e} rescued ==="
               []
             end
           end
