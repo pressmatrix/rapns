@@ -10,10 +10,15 @@ module Rapns
 
         def deliverable_notifications(apps)
           with_database_reconnect_and_retry do
-            batch_size = Rapns.config.batch_size
-            relation = Rapns::Notification.ready_for_delivery.for_apps(apps)
-            relation = relation.limit(batch_size) unless Rapns.config.push
-            relation.to_a
+            begin
+              batch_size = Rapns.config.batch_size
+              relation = Rapns::Notification.where(:picked_up => false).ready_for_delivery.for_apps(apps)
+              relation = relation.limit(batch_size) unless Rapns.config.push
+              relation.update_all(:picked_up => true)
+              relation.to_a
+            rescue
+              []
+            end
           end
         end
 
