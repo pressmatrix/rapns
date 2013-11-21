@@ -12,7 +12,6 @@ module Rapns
 
       def self.enqueue(notifications)
         notifications.group_by(&:app_id).each do |app_id, group|
-          Rapns.logger.info "=== enqueueing group of #{group.count} notifications ==="
           batch = Batch.new(group)
           if app = runners[app_id]
             app.enqueue(batch)
