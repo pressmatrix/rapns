@@ -41,9 +41,10 @@ module Rapns
       def self.enqueue_notifications
         begin
           idle = Rapns::Daemon::AppRunner.idle.map(&:app)
+          Rapns.logger.debug "Feeder found #{idle.size} idle app runners"
           return if idle.empty?
           notifications = Rapns::Daemon.store.deliverable_notifications(idle)
-          Rapns.logger.info "=== feeding #{notifications.count} notifications ==="
+          Rapns.logger.debug "Feeder found #{notifications.count} deliverable notifications"
           Rapns::Daemon::AppRunner.enqueue(notifications)
         rescue StandardError => e
           Rapns.logger.error(e)

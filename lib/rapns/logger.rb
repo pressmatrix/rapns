@@ -14,6 +14,10 @@ module Rapns
       end
     end
 
+    def debug(msg)
+      log(:debug, msg)
+    end
+
     def info(msg)
       log(:info, msg)
     end
